@@ -1,21 +1,16 @@
 import "./App.css";
 import DataFetchReducer from "./DataFetchReducer";
 import ErrorBoundary from "./ErrorBoundary";
-import { Link, Routes, Route, Outlet, NavLink } from "react-router-dom";
-
+import { Routes, Route, Outlet, NavLink } from "react-router-dom";
+import Stopwatch from "./Stopwatch";
+import TimerCounter from "./TimerCounter";
+import TodoList from "./TodoList";
+import AckoTable from "./AckoTable";
+import ChatApp from "./ChatApp";
+import ScrumBot from "./ScrumBot";
 function App() {
-  const usersList = [
-    {
-      id: 1,
-      name: "Suhaas",
-    },
-    {
-      id: 2,
-      name: "Jainam",
-    },
-  ];
   return (
-    <div className="App">
+    <div>
       Robin Weiruch playground
       {/* https://www.robinwieruch.de/react-hooks-fetch-data/ */}
       {/* <HackerNewsList /> */}
@@ -31,14 +26,20 @@ function App() {
             }
           ></Route>
           <Route
-            path="home"
+            path="algoliahackernews"
             element={
               <ErrorBoundary>
                 <DataFetchReducer />
               </ErrorBoundary>
             }
           />
-          <Route path="users" element={<Users users={usersList} />} />
+          <Route path="timercounter" element={<TimerCounter />} />
+          <Route path="stopwatch" element={<Stopwatch />} />
+          <Route path="todolistreact" element={<TodoList />} />
+          <Route path="scrumbot" element={<ScrumBot />} />
+          <Route path="ackotable" element={<AckoTable />} />
+          <Route path="chatapp" element={<ChatApp />} />
+
           <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>
@@ -58,35 +59,42 @@ const NoMatch = () => {
 //   );
 // };
 
+//Layout gets isActive from inheritance
 const Layout = (children) => {
   const style = ({ isActive }) => ({
     fontWeight: isActive ? "bold" : "normal",
+    margin: "50px",
+    backgroundColor: isActive ? "red" : "lightgray",
+    padding: "5px",
   });
   return (
-    <>
-      <nav>
-        <NavLink to="/home" style={style}>
-          Home
+    <div>
+      <nav style={{ backgroundColor: "cyan", padding: "20px" }}>
+        <NavLink to="/algoliahackernews" style={style}>
+          Algolia Hacker News
         </NavLink>
-        <NavLink to="/users" style={style}>
-          About
+        <NavLink to="/timercounter" style={style}>
+          Timer / Counter
+        </NavLink>
+        <NavLink to="/stopwatch" style={style}>
+          Stopwatch
+        </NavLink>
+        <NavLink to="/todolistreact" style={style}>
+          To do list react porter
+        </NavLink>
+        <NavLink to="/scrumbot" style={style}>
+          scrum BOT
+        </NavLink>
+        <NavLink to="/ackotable" style={style}>
+          Acko Table
+        </NavLink>
+        <NavLink to="/chatapp" style={style}>
+          Chat App
         </NavLink>
       </nav>
       <main>
         <Outlet />
       </main>
-    </>
-  );
-};
-
-const Users = ({ users }) => {
-  return (
-    <div>
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>{user.name}</li>
-        ))}
-      </ul>
     </div>
   );
 };
