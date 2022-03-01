@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import { v4 as uuid } from "uuid";
 const TodoList = () => {
   const [taskName, setTaskName] = useState("");
-  const [editInputTaskName, setEditInputTaskName] = useState(taskName);
 
   const [todo, setTodo] = useState([]);
-
-  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleTodoSubmit = (event, taskName) => {
     event.preventDefault();
@@ -17,6 +14,7 @@ const TodoList = () => {
           id: uuid(),
           todoName: taskName,
           completed: false,
+          isEditMode: false,
         },
       ];
     });
@@ -24,16 +22,23 @@ const TodoList = () => {
   };
 
   const handleEdit = (todoObj) => {
-    setIsEditMode(true);
-    setEditInputTaskName(todoObj.todoName);
+    const newTodo = todo.map((todoItem) => {
+      if (todoItem.id === todoObj.id) {
+        const updatedItem = {
+          ...todoItem,
+          isEditMode: !todoItem.isEditMode,
+        };
+
+        return updatedItem;
+      }
+      return todoItem;
+    });
+
+    setTodo(newTodo);
   };
 
   const handleDelete = (todoObjToBeDeleted) => {
     setTodo(todo.filter((todoObj) => todoObj.id !== todoObjToBeDeleted.id));
-  };
-
-  const onSave = () => {
-    console.log("edit confirm save");
   };
 
   return (
@@ -59,19 +64,10 @@ const TodoList = () => {
         />
       </form>
 
-      {isEditMode ? (
-        <form>
-          <label htmlFor="editTaskNameInput"></label>
-          <input
-            type="text"
-            id="editTaskNameInput"
-            value={editInputTaskName}
-            onChange={(event) => setEditInputTaskName(event.target.value)}
-          />
-          <button type="submit">save</button>
-        </form>
-      ) : (
-        todo.map((todoObj) => (
+      {todo.map((todoObj) =>
+        todoObj.isEditMode ? (
+          <EditComponent todoItem={todoObj} />
+        ) : (
           <div style={{ margin: "20px" }} key={todoObj.id}>
             <div
               style={{
@@ -87,8 +83,24 @@ const TodoList = () => {
             <button onClick={() => handleEdit(todoObj)}>Edit</button>
             <button onClick={() => handleDelete(todoObj)}>Delete</button>
           </div>
-        ))
+        )
       )}
+    </div>
+  );
+};
+
+const EditComponent = ({ todoItem }) => {
+  const [editInputTaskName, setEditInputTaskName] = useState(todoItem.todoName);
+  return (
+    <div key={todoItem.id}>
+      <label htmlFor="editTaskNameInput"></label>
+      <input
+        type="text"
+        id="editTaskNameInput"
+        value={editInputTaskName}
+        onChange={(event) => setEditInputTaskName(event.target.value)}
+      />
+      <button type="submit">save</button>
     </div>
   );
 };
