@@ -1,63 +1,109 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { v4 as uuid } from "uuid";
-import AckoTable from "./AckoTable";
+
+const todoReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_TODO":
+      return [
+        ...state,
+        {
+          id: uuid(),
+          todoName: action.inputTodo,
+          isCompleted: false,
+        },
+      ];
+    case "DELETE_TODO":
+      return state.filter((item) => item.id !== action.id);
+
+    case "TOGGLECOMPLETE_TODO":
+      return state.map((item) => {
+        if (item.id === action.id) {
+          return { ...item, isCompleted: !item.isCompleted };
+        }
+        return item;
+      });
+
+    case "EDITSAVE_TODO":
+      return state.map((item) => {
+        if (item.id === action.id) {
+          item.todoName = action.editName;
+        }
+        return item;
+      });
+
+    default:
+      throw new Error();
+  }
+};
+
+const filterReducer = (state, action) => {
+  switch (action.type) {
+    case "SHOW_ALL":
+      return "ALL";
+    case "SHOW_COMPLETED":
+      return "COMPLETED";
+    case "SHOW_UNCOMPLETED":
+      return "UNCOMPLETED";
+    default:
+      throw new Error();
+  }
+};
 
 const TodoList = () => {
   const [inputTodo, setInputTodo] = useState("");
 
-  const [todo, setTodo] = useState([]);
+  // const [todo, setTodo] = useState([]);
+  const [filter, dispatchFilter] = useReducer(filterReducer, "ALL");
+  const [todo, dispatchTodo] = useReducer(todoReducer, []);
 
   const handleInputTodo = (event) => {
     setInputTodo(event.target.value);
   };
 
   const addTodo = () => {
-    // let newTodoList = todo.concat({
-    //   id: uuid(),
-    //   todoName: inputTodo,
-    // });
-
-    setTodo([...todo, { id: uuid(), todoName: inputTodo, isCompleted: false }]);
-    console.log("before storing", todo);
-    localStorage.setItem("todoList", JSON.stringify(...todo));
+    dispatchTodo({ type: "ADD_TODO", inputTodo });
     setInputTodo("");
   };
 
   const handleDelete = (id) => {
-    setTodo(todo.filter((item) => item.id !== id));
+    dispatchTodo({ type: "DELETE_TODO", id });
   };
 
   const handleToggleCompleted = (id) => {
-    //!dont do the below and you know why, don't directly update the state
-    // setTodo(
-    //   todo.map((item) => {
-    //     if (item.id === id) {
-    //       item.isCompleted = !item.isCompleted;
-    //     }
-    //     return item;
-    //   })
-    // );
-    setTodo(
-      todo.map((item) => {
-        if (item.id === id) {
-          return { ...todo, isCompleted: !item.isCompleted };
-        } else {
-          return item;
-        }
-      })
-    );
+    dispatchTodo({ type: "TOGGLECOMPLETE_TODO", id });
   };
 
   const handleSave = (id, editName) => {
-    setTodo(
-      todo.map((item) => {
-        if (item.id === id) {
-          item.todoName = editName;
-        }
-        return item;
-      })
-    );
+    dispatchTodo({ type: "EDITSAVE_TODO", id, editName });
   };
+
+  const handleShowAll = () => {
+    dispatchFilter({ type: "SHOW_ALL" });
+  };
+
+  const handleShowCompleted = () => {
+    dispatchFilter({ type: "SHOW_COMPLETED" });
+  };
+
+  const handleShowUnCompleted = () => {
+    dispatchFilter({ type: "SHOW_UNCOMPLETED" });
+  };
+
+  const filterTodos = todo.filter((item) => {
+    if (filter === "ALL") {
+      return true;
+    }
+
+    if (filter === "COMPLETED" && item.isCompleted) {
+      return true;
+    }
+
+    if (filter === "UNCOMPLETED" && !item.isCompleted) {
+      return true;
+    }
+
+    return false;
+  });
 
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -75,7 +121,12 @@ const TodoList = () => {
           inputTodo={inputTodo}
           handleInputTodo={handleInputTodo}
         ></AddTodo>
-        {todo.map((item) => (
+        <div>
+          <button onClick={handleShowAll}>Show All</button>
+          <button onClick={handleShowCompleted}>Show completed</button>
+          <button onClick={handleShowUnCompleted}>Show not completed</button>
+        </div>
+        {filterTodos.map((item) => (
           <TodoList1
             key={item.id}
             todo={item}
