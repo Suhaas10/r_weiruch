@@ -28,12 +28,12 @@ const AckoTable = () => {
         </thead>
         <tbody>
           {/* {data.results[0].location && (
-            <tr>
-              {Object.keys(data.results[0].location).map((key) => (
-                <td>{key}</td>
-              ))}
-            </tr>
-          )} */}
+              <tr>
+                {Object.keys(data.results[0].location).map((key) => (
+                  <td>{key}</td>
+                ))}
+              </tr>
+            )} */}
         </tbody>
       </table>
 

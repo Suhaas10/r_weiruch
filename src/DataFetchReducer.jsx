@@ -1,20 +1,6 @@
 // `https://hn.algolia.com/api/v1/search?query=${input}`
 
-import React, { useEffect, useState } from "react";
-import { useReducer } from "react";
-
-const debounce = (fn, delay) => {
-  let timer;
-  console.log(fn);
-
-  return (...args) => {
-    clearTimeout(timer);
-    let context = this;
-    timer = setTimeout(() => {
-      fn.apply(context, [...args]);
-    }, delay);
-  };
-};
+import React, { useEffect, useReducer, useState } from "react";
 
 const dataFetchReducerFunction = (state, action) => {
   switch (action.type) {
@@ -24,15 +10,13 @@ const dataFetchReducerFunction = (state, action) => {
         isLoading: true,
         isError: false,
       };
-
     case "FETCH_SUCCESS":
       return {
         ...state,
         isLoading: false,
+        searchResults: action.payload,
         isError: false,
-        dataToRender: action.payload,
       };
-
     case "FETCH_FAILURE":
       return {
         ...state,
@@ -45,87 +29,74 @@ const dataFetchReducerFunction = (state, action) => {
   }
 };
 
-const useCallApi = (initialUrl, initialData) => {
+const useDataApi = (initialData, initialUrl) => {
   const [url, setUrl] = useState(initialUrl);
 
   const [state, dispatch] = useReducer(dataFetchReducerFunction, {
-    isLoading: false,
+    isLoading: true,
+    searchResults: initialData,
     isError: false,
-    dataToRender: initialData,
   });
 
   useEffect(() => {
-    let unMounted = false;
-    dispatch({ type: "FETCH_INIT" });
-
     const dataFetch = async () => {
+      dispatch({ type: "FETCH_INIT" });
+
       try {
         const response = await fetch(url);
         const responseJson = await response.json();
-
-        unMounted || dispatch({ type: "FETCH_SUCCESS", payload: responseJson });
+        dispatch({ type: "FETCH_SUCCESS", payload: responseJson });
       } catch (error) {
-        unMounted || dispatch({ type: "FETCH_FAILURE" });
+        dispatch({ type: "FETCH_FAILURE" });
       }
     };
 
     dataFetch();
-
-    return () => {
-      unMounted = true;
-    };
   }, [url]);
 
   return [state, setUrl];
 };
 
 const DataFetchReducer = () => {
-  const [inputValue, setInputValue] = useState("redux");
-  const [{ isLoading, dataToRender, isError }, doFetch] = useCallApi(
-    "https://hn.algolia.com/api/v1/search?query=redux",
-    { hits: [] }
+  const [inputSearchQuery, setInputSearchQuery] = useState("redux");
+
+  const [{ isLoading, searchResults, isError }, doFetch] = useDataApi(
+    { hits: [] },
+    `https://hn.algolia.com/api/v1/search?query=redux`
   );
 
   return (
     <>
-      <div
-        style={{
-          backgroundColor: "black",
-          color: "white",
-          boxSizing: "border-box",
-        }}
-      >
-        dataFetchReducer
-      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          doFetch(`https://hn.algolia.com/api/v1/search?query=${inputValue}`);
+          doFetch(
+            `https://hn.algolia.com/api/v1/search?query=${inputSearchQuery}`
+          );
         }}
       >
+        {" "}
         <input
           type="text"
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-          }}
+          value={inputSearchQuery}
+          onChange={(e) => setInputSearchQuery(e.target.value)}
         />
-        <button type="submit">Search</button>
+        <button type="submit">search</button>
       </form>
+
       {isError && <div>Something went wrong...</div>}
-      <div>
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : (
-          <ul>
-            {dataToRender.hits.map((dataObject) => (
-              <li key={dataObject.title}>
-                <a href={dataObject.url}>{dataObject.title}</a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+
+      {isLoading ? (
+        <div>Loading ...</div>
+      ) : (
+        <ul>
+          {searchResults.hits.map((item) => (
+            <li>
+              <a href={item.url}>{item.title}</a>
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 };

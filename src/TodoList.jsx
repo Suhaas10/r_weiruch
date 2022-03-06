@@ -1,107 +1,176 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
+import AckoTable from "./AckoTable";
+
 const TodoList = () => {
-  const [taskName, setTaskName] = useState("");
+  const [inputTodo, setInputTodo] = useState("");
 
   const [todo, setTodo] = useState([]);
 
-  const handleTodoSubmit = (event, taskName) => {
-    event.preventDefault();
-    setTodo((prevState) => {
-      return [
-        ...prevState,
-        {
-          id: uuid(),
-          todoName: taskName,
-          completed: false,
-          isEditMode: false,
-        },
-      ];
-    });
-    setTaskName("");
+  const handleInputTodo = (event) => {
+    setInputTodo(event.target.value);
   };
 
-  const handleEdit = (todoObj) => {
-    const newTodo = todo.map((todoItem) => {
-      if (todoItem.id === todoObj.id) {
-        const updatedItem = {
-          ...todoItem,
-          isEditMode: !todoItem.isEditMode,
-        };
+  const addTodo = () => {
+    // let newTodoList = todo.concat({
+    //   id: uuid(),
+    //   todoName: inputTodo,
+    // });
 
-        return updatedItem;
-      }
-      return todoItem;
-    });
-
-    setTodo(newTodo);
+    setTodo([...todo, { id: uuid(), todoName: inputTodo, isCompleted: false }]);
+    console.log("before storing", todo);
+    localStorage.setItem("todoList", JSON.stringify(...todo));
+    setInputTodo("");
   };
 
-  const handleDelete = (todoObjToBeDeleted) => {
-    setTodo(todo.filter((todoObj) => todoObj.id !== todoObjToBeDeleted.id));
+  const handleDelete = (id) => {
+    setTodo(todo.filter((item) => item.id !== id));
+  };
+
+  const handleToggleCompleted = (id) => {
+    //!dont do the below and you know why, don't directly update the state
+    // setTodo(
+    //   todo.map((item) => {
+    //     if (item.id === id) {
+    //       item.isCompleted = !item.isCompleted;
+    //     }
+    //     return item;
+    //   })
+    // );
+    setTodo(
+      todo.map((item) => {
+        if (item.id === id) {
+          return { ...todo, isCompleted: !item.isCompleted };
+        } else {
+          return item;
+        }
+      })
+    );
+  };
+
+  const handleSave = (id, editName) => {
+    setTodo(
+      todo.map((item) => {
+        if (item.id === id) {
+          item.todoName = editName;
+        }
+        return item;
+      })
+    );
   };
 
   return (
-    <div>
-      <header style={{ padding: "20px" }}>
-        <h1>To-DO List</h1>
-      </header>
-      <form onSubmit={(event) => handleTodoSubmit(event, taskName)}>
-        <label htmlFor="taskNameInput">Task Name</label>
-        <input
-          style={{
-            backgroundColor: "white",
-            border: "1px solid black",
-            padding: "5px",
-            borderRadius: "10px",
-            margin: "30px",
-          }}
-          type="text"
-          id="taskNameInput"
-          value={taskName}
-          onChange={(event) => setTaskName(event.target.value)}
-          required
-        />
-      </form>
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          background: "linear-gradient(red,pink)",
+          padding: "20px",
+          margin: "20px",
+          width: "500px",
+        }}
+      >
+        <h1>To-Do App</h1>
+        <AddTodo
+          handleAddTodo={addTodo}
+          inputTodo={inputTodo}
+          handleInputTodo={handleInputTodo}
+        ></AddTodo>
+        {todo.map((item) => (
+          <TodoList1
+            key={item.id}
+            todo={item}
+            handleDelete={handleDelete}
+            handleToggleCompleted={handleToggleCompleted}
+            handleSave={handleSave}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 
-      {todo.map((todoObj) =>
-        todoObj.isEditMode ? (
-          <EditComponent todoItem={todoObj} />
-        ) : (
-          <div style={{ margin: "20px" }} key={todoObj.id}>
-            <div
-              style={{
-                display: "inline",
-                backgroundColor: "#FFF000",
-                padding: "8px",
-                margin: "20px",
-                borderRadius: "0 10px 0 10px",
-              }}
-            >
-              {todoObj.todoName}
-            </div>
-            <button onClick={() => handleEdit(todoObj)}>Edit</button>
-            <button onClick={() => handleDelete(todoObj)}>Delete</button>
+const TodoList1 = ({
+  todo,
+  handleDelete,
+  handleToggleCompleted,
+  handleSave,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(todo.todoName);
+
+  return (
+    <div>
+      {isEditing ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "5px",
+            margin: "5px",
+          }}
+        >
+          <input
+            type="text"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+          />
+          <button
+            onClick={() => {
+              setIsEditing(false);
+              handleSave(todo.id, editName);
+            }}
+          >
+            save
+          </button>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "5px",
+            margin: "5px",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "20px",
+              fontFamily: "cursive",
+              textDecoration: todo.isCompleted ? "line-through" : "none",
+            }}
+            onClick={() => handleToggleCompleted(todo.id)}
+          >
+            {todo.todoName}
           </div>
-        )
+          <div>
+            <button onClick={() => setIsEditing(true)}>edit</button>
+            <button onClick={() => handleDelete(todo.id)}>delete</button>
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
-const EditComponent = ({ todoItem }) => {
-  const [editInputTaskName, setEditInputTaskName] = useState(todoItem.todoName);
+const AddTodo = ({ inputTodo, handleInputTodo, handleAddTodo }) => {
   return (
-    <div key={todoItem.id}>
-      <label htmlFor="editTaskNameInput"></label>
+    <form
+      style={{ padding: "20px", margin: "10px" }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleAddTodo();
+      }}
+    >
+      <label htmlFor="btnAddTodo">Add to-do</label>
       <input
         type="text"
-        id="editTaskNameInput"
-        value={editInputTaskName}
-        onChange={(event) => setEditInputTaskName(event.target.value)}
+        id="btnAddTodo"
+        value={inputTodo}
+        onChange={handleInputTodo}
+        required
       />
-      <button type="submit">save</button>
-    </div>
+      <button type="submit">Add to-do</button>
+    </form>
   );
 };
 

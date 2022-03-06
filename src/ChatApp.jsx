@@ -23,20 +23,26 @@ const ChatApp = () => {
 
   return (
     <div>
-      {isOnline ? (
-        <h1
-          style={{
-            color: "green",
-            border: "3px dotted black",
-            height: "50vh",
-            margin: "20px",
-          }}
-        >
-          Online
-        </h1>
-      ) : (
-        <h1 style={{ color: "red" }}>Offline</h1>
-      )}
+      <h1
+        style={
+          isOnline
+            ? {
+                color: "green",
+                border: "3px dotted black",
+                height: "50vh",
+                margin: "20px",
+              }
+            : {
+                color: "red",
+                border: "3px dotted black",
+                height: "50vh",
+                margin: "20px",
+              }
+        }
+      >
+        {isOnline ? "Online" : "offline"}
+      </h1>
+      )
     </div>
   );
 };
