@@ -8,6 +8,8 @@ import TodoList from "./TodoList";
 import AckoTable from "./AckoTable";
 import ChatApp from "./ChatApp";
 import ScrumBot from "./ScrumBot";
+import Hooks from "./Hooks";
+
 function App() {
   return (
     <div>
@@ -39,6 +41,7 @@ function App() {
           <Route path="scrumbot" element={<ScrumBot />} />
           <Route path="ackotable" element={<AckoTable />} />
           <Route path="chatapp" element={<ChatApp />} />
+          <Route path="hooks" element={<Hooks />} />
 
           <Route path="*" element={<NoMatch />} />
         </Route>
@@ -90,6 +93,9 @@ const Layout = (children) => {
         </NavLink>
         <NavLink to="/chatapp" style={style}>
           Chat App
+        </NavLink>
+        <NavLink to="/hooks" style={style}>
+          HOOKS
         </NavLink>
       </nav>
       <main>

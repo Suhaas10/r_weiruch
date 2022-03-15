@@ -5,7 +5,7 @@ const initialList = [
   {
     listId: uuid(),
     listName: "to-do",
-    cardList: [
+    card: [
       {
         cardId: uuid(),
         cardName: "classic double spending problem",
@@ -19,7 +19,7 @@ const initialList = [
   {
     listId: uuid(),
     listName: "in-progress",
-    cardList: [
+    card: [
       {
         cardId: uuid(),
         cardName: "design patterns",
@@ -47,8 +47,20 @@ const ScrumBot = () => {
     setInputList("");
   };
 
-  const handleAddCard = (id) => {
-    list.findIndex((item) => item.id === id);
+  const handleAddCard = (id, cardName) => {
+    setList(
+      list.map((item) => {
+        if (item.listId === id) {
+          let updatedItem = item.card.concat({
+            cardId: uuid(),
+            cardName: cardName,
+          });
+          return updatedItem;
+        } else {
+          return item;
+        }
+      })
+    );
   };
 
   const handleDelete = (id) => {
@@ -120,23 +132,37 @@ const List = ({ list, onDelete, onAddCard }) => {
         </span>
       </div>
       <AddTask list={list} onAddCard={onAddCard}></AddTask>
+      {list.card.map((item) => (
+        <div>{item.cardName}</div>
+      ))}
     </div>
   );
 };
 
 const AddTask = ({ list, onAddCard }) => {
-  console.log(onAddCard);
+  const [cardName, setCardName] = useState("");
   return (
-    <div
-      style={{
-        border: "1px solid black",
-        padding: "10px",
-        margin: "10px",
-      }}
-    >
-      <input style={{ width: "150px" }} type="text" />
-      <button onClick={() => onAddCard(list.id)}>Add Task</button>
-    </div>
+    <>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onAddCard(list.listId, cardName);
+        }}
+        style={{
+          border: "1px solid black",
+          padding: "10px",
+          margin: "10px",
+        }}
+      >
+        <input
+          style={{ width: "150px" }}
+          type="text"
+          value={cardName}
+          onChange={(e) => setCardName(e.target.value)}
+        />
+        <button type="submit">Add Task</button>
+      </form>
+    </>
   );
 };
 

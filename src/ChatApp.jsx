@@ -42,7 +42,6 @@ const ChatApp = () => {
       >
         {isOnline ? "Online" : "offline"}
       </h1>
-      )
     </div>
   );
 };

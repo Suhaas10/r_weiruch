@@ -19,19 +19,21 @@ const Stopwatch = ({ users }) => {
 
   return (
     <>
+      <div>
+        <h1>Stop Watch</h1>
+      </div>
       {isOn ? (
-        <button onClick={() => setIsOn(false)}>Off</button>
+        <button onClick={() => setIsOn(false)}>Stop</button>
       ) : (
-        <button onClick={() => setIsOn(true)}>On</button>
+        <button onClick={() => setIsOn(true)}>Start</button>
       )}
-
       <h1>{count}</h1>
-
       <button
         onClick={() => {
           setIsOn(false);
           setCount(0);
         }}
+        disabled={count === 0}
       >
         Reset
       </button>

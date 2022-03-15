@@ -67,6 +67,25 @@ const DataFetchReducer = () => {
 
   return (
     <>
+      <div
+        style={{
+          display: "flex",
+          margin: "10px",
+          justifyContent: "center",
+          backgroundColor: "orange",
+          flexDirection: "column",
+        }}
+      >
+        <h1
+          style={{
+            padding: "10px",
+          }}
+        >
+          Hacker News
+        </h1>
+        <h4>best search engine for your tech news</h4>
+      </div>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -74,6 +93,7 @@ const DataFetchReducer = () => {
             `https://hn.algolia.com/api/v1/search?query=${inputSearchQuery}`
           );
         }}
+        style={{ padding: "10px", margin: "10px" }}
       >
         {" "}
         <input
@@ -89,13 +109,13 @@ const DataFetchReducer = () => {
       {isLoading ? (
         <div>Loading ...</div>
       ) : (
-        <ul>
+        <div>
           {searchResults.hits.map((item) => (
-            <li>
+            <div>
               <a href={item.url}>{item.title}</a>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </>
   );

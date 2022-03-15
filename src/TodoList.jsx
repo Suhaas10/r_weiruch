@@ -1,5 +1,10 @@
-import React, { useEffect, useReducer, useState } from "react";
+//! 03032022 noreply-payroll
+//?
+
+import React, { useReducer, useState, useContext, createContext } from "react";
 import { v4 as uuid } from "uuid";
+
+const ThemeContext = createContext();
 
 const todoReducer = (state, action) => {
   switch (action.type) {
@@ -14,7 +19,6 @@ const todoReducer = (state, action) => {
       ];
     case "DELETE_TODO":
       return state.filter((item) => item.id !== action.id);
-
     case "TOGGLECOMPLETE_TODO":
       return state.map((item) => {
         if (item.id === action.id) {
@@ -22,7 +26,6 @@ const todoReducer = (state, action) => {
         }
         return item;
       });
-
     case "EDITSAVE_TODO":
       return state.map((item) => {
         if (item.id === action.id) {
@@ -30,7 +33,6 @@ const todoReducer = (state, action) => {
         }
         return item;
       });
-
     default:
       throw new Error();
   }
@@ -50,58 +52,19 @@ const filterReducer = (state, action) => {
 };
 
 const TodoList = () => {
-  const [inputTodo, setInputTodo] = useState("");
-
-  // const [todo, setTodo] = useState([]);
   const [filter, dispatchFilter] = useReducer(filterReducer, "ALL");
   const [todo, dispatchTodo] = useReducer(todoReducer, []);
-
-  const handleInputTodo = (event) => {
-    setInputTodo(event.target.value);
-  };
-
-  const addTodo = () => {
-    dispatchTodo({ type: "ADD_TODO", inputTodo });
-    setInputTodo("");
-  };
-
-  const handleDelete = (id) => {
-    dispatchTodo({ type: "DELETE_TODO", id });
-  };
-
-  const handleToggleCompleted = (id) => {
-    dispatchTodo({ type: "TOGGLECOMPLETE_TODO", id });
-  };
-
-  const handleSave = (id, editName) => {
-    dispatchTodo({ type: "EDITSAVE_TODO", id, editName });
-  };
-
-  const handleShowAll = () => {
-    dispatchFilter({ type: "SHOW_ALL" });
-  };
-
-  const handleShowCompleted = () => {
-    dispatchFilter({ type: "SHOW_COMPLETED" });
-  };
-
-  const handleShowUnCompleted = () => {
-    dispatchFilter({ type: "SHOW_UNCOMPLETED" });
-  };
 
   const filterTodos = todo.filter((item) => {
     if (filter === "ALL") {
       return true;
     }
-
     if (filter === "COMPLETED" && item.isCompleted) {
       return true;
     }
-
     if (filter === "UNCOMPLETED" && !item.isCompleted) {
       return true;
     }
-
     return false;
   });
 
@@ -116,38 +79,37 @@ const TodoList = () => {
         }}
       >
         <h1>To-Do App</h1>
-        <AddTodo
-          handleAddTodo={addTodo}
-          inputTodo={inputTodo}
-          handleInputTodo={handleInputTodo}
-        ></AddTodo>
-        <div>
-          <button onClick={handleShowAll}>Show All</button>
-          <button onClick={handleShowCompleted}>Show completed</button>
-          <button onClick={handleShowUnCompleted}>Show not completed</button>
-        </div>
-        {filterTodos.map((item) => (
-          <TodoList1
-            key={item.id}
-            todo={item}
-            handleDelete={handleDelete}
-            handleToggleCompleted={handleToggleCompleted}
-            handleSave={handleSave}
-          />
-        ))}
+        {/* <ThemeContext.Provider value={dispatchTodo}> */}
+        <AddTodo dispatch={dispatchTodo}></AddTodo>
+        <Filter dispatch={dispatchFilter}></Filter>
+        <TodoList1 todos={filterTodos} dispatch={dispatchTodo}></TodoList1>
+        {/* </ThemeContext.Provider> */}
       </div>
     </div>
   );
 };
 
-const TodoList1 = ({
-  todo,
-  handleDelete,
-  handleToggleCompleted,
-  handleSave,
-}) => {
+const TodoList1 = ({ todos, dispatch }) => {
+  return todos.map((todo) => (
+    <TodoItem todo={todo} dispatch={dispatch}></TodoItem>
+  ));
+};
+
+const TodoItem = ({ todo, dispatch }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(todo.todoName);
+
+  const handleDelete = (id) => {
+    dispatch({ type: "DELETE_TODO", id });
+  };
+
+  const handleToggleCompleted = (id) => {
+    dispatch({ type: "TOGGLECOMPLETE_TODO", id });
+  };
+
+  const handleSave = (id, editName) => {
+    dispatch({ type: "EDITSAVE_TODO", id, editName });
+  };
 
   return (
     <div>
@@ -203,13 +165,44 @@ const TodoList1 = ({
   );
 };
 
-const AddTodo = ({ inputTodo, handleInputTodo, handleAddTodo }) => {
+const Filter = ({ dispatch }) => {
+  const handleShowAll = () => {
+    dispatch({ type: "SHOW_ALL" });
+  };
+
+  const handleShowCompleted = () => {
+    dispatch({ type: "SHOW_COMPLETED" });
+  };
+
+  const handleShowUnCompleted = () => {
+    dispatch({ type: "SHOW_UNCOMPLETED" });
+  };
+
+  return (
+    <div>
+      <button onClick={handleShowAll}>Show All</button>
+      <button onClick={handleShowCompleted}>Show completed</button>
+      <button onClick={handleShowUnCompleted}>Show not completed</button>
+    </div>
+  );
+};
+
+const AddTodo = ({ dispatch }) => {
+  const [inputTodo, setInputTodo] = useState("");
+  const handleInputTodo = (event) => {
+    setInputTodo(event.target.value);
+  };
+
+  const addTodo = () => {
+    dispatch({ type: "ADD_TODO", inputTodo });
+    setInputTodo("");
+  };
   return (
     <form
       style={{ padding: "20px", margin: "10px" }}
       onSubmit={(e) => {
         e.preventDefault();
-        handleAddTodo();
+        addTodo();
       }}
     >
       <label htmlFor="btnAddTodo">Add to-do</label>
