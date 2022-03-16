@@ -1,7 +1,13 @@
 //! 03032022 noreply-payroll
 //?
 
-import React, { useReducer, useState, useContext, createContext } from "react";
+import React, {
+  useReducer,
+  useState,
+  useContext,
+  createContext,
+  useCallback,
+} from "react";
 import { v4 as uuid } from "uuid";
 
 const ThemeContext = createContext();
@@ -52,6 +58,7 @@ const filterReducer = (state, action) => {
 };
 
 const TodoList = () => {
+  console.log("TodoList : rendered ");
   const [filter, dispatchFilter] = useReducer(filterReducer, "ALL");
   const [todo, dispatchTodo] = useReducer(todoReducer, []);
 
@@ -90,12 +97,14 @@ const TodoList = () => {
 };
 
 const TodoList1 = ({ todos, dispatch }) => {
+  console.log("TodoList1 : rendered ");
   return todos.map((todo) => (
-    <TodoItem todo={todo} dispatch={dispatch}></TodoItem>
+    <TodoItem key={todo.id} todo={todo} dispatch={dispatch}></TodoItem>
   ));
 };
 
 const TodoItem = ({ todo, dispatch }) => {
+  console.log("TodoItem : rendered ");
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(todo.todoName);
 
@@ -166,6 +175,7 @@ const TodoItem = ({ todo, dispatch }) => {
 };
 
 const Filter = ({ dispatch }) => {
+  console.log("Filter : rendered ");
   const handleShowAll = () => {
     dispatch({ type: "SHOW_ALL" });
   };
@@ -188,6 +198,7 @@ const Filter = ({ dispatch }) => {
 };
 
 const AddTodo = ({ dispatch }) => {
+  console.log("AddTodo Form: rendered ");
   const [inputTodo, setInputTodo] = useState("");
   const handleInputTodo = (event) => {
     setInputTodo(event.target.value);
