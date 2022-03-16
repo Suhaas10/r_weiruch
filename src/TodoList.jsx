@@ -7,6 +7,7 @@ import React, {
   useContext,
   createContext,
   useCallback,
+  useEffect,
 } from "react";
 import { v4 as uuid } from "uuid";
 
@@ -60,7 +61,14 @@ const filterReducer = (state, action) => {
 const TodoList = () => {
   console.log("TodoList : rendered ");
   const [filter, dispatchFilter] = useReducer(filterReducer, "ALL");
-  const [todo, dispatchTodo] = useReducer(todoReducer, []);
+  const [todo, dispatchTodo] = useReducer(
+    todoReducer,
+    JSON.parse(localStorage.getItem("todos"))
+  );
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todo));
+  }, [todo]);
 
   const filterTodos = todo.filter((item) => {
     if (filter === "ALL") {
