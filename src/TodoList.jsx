@@ -74,7 +74,7 @@ const TodoList = () => {
     if (filter === "ALL") {
       return true;
     }
-    if (filter === "COMPLETED" && item.isCompleted) {
+    if (filter === "COMPLETED" && item.isCompleted) {n
       return true;
     }
     if (filter === "UNCOMPLETED" && !item.isCompleted) {
