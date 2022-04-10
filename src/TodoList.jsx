@@ -1,6 +1,3 @@
-//! 03032022 noreply-payroll
-//?
-
 import React, {
   useReducer,
   useState,
@@ -74,7 +71,7 @@ const TodoList = () => {
     if (filter === "ALL") {
       return true;
     }
-    if (filter === "COMPLETED" && item.isCompleted) {n
+    if (filter === "COMPLETED" && item.isCompleted) {
       return true;
     }
     if (filter === "UNCOMPLETED" && !item.isCompleted) {

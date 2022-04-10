@@ -1,6 +1,7 @@
 // `https://hn.algolia.com/api/v1/search?query=${input}`
 
 import React, { useEffect, useReducer, useState } from "react";
+import "./App.css";
 
 const dataFetchReducerFunction = (state, action) => {
   switch (action.type) {
@@ -109,10 +110,17 @@ const DataFetchReducer = () => {
       {isLoading ? (
         <div>Loading ...</div>
       ) : (
-        <div>
+        <div className="flexContainer">
           {searchResults.hits.map((item) => (
             <div>
-              <a href={item.url}>{item.title}</a>
+              {" "}
+              <div className="flexItem">
+                <a href={item.url} className="items">
+                  {item.title}
+                </a>
+              </div>
+              <label htmlFor="">Comments</label>
+              <div>{item.num_comments}</div>
             </div>
           ))}
         </div>
