@@ -8,7 +8,10 @@ import TodoList from "./TodoList";
 import AckoTable from "./AckoTable";
 import ChatApp from "./ChatApp";
 import ScrumBot from "./ScrumBot";
+import UseCallback from "./UseCallback";
 import Hooks from "./Hooks";
+import ReactMemo from "./Reactmemo";
+import UseMemo from "./UseMemo";
 
 function App() {
   return (
@@ -41,7 +44,9 @@ function App() {
           <Route path="scrumbot" element={<ScrumBot />} />
           <Route path="ackotable" element={<AckoTable />} />
           <Route path="chatapp" element={<ChatApp />} />
-          <Route path="hooks" element={<Hooks />} />
+          <Route path="usecallback" element={<UseCallback />} />
+          <Route path="reactmemo" element={<ReactMemo />} />
+          <Route path="usememo" element={<UseMemo />} />
 
           <Route path="*" element={<NoMatch />} />
         </Route>
@@ -66,13 +71,20 @@ const NoMatch = () => {
 const Layout = (children) => {
   const style = ({ isActive }) => ({
     fontWeight: isActive ? "bold" : "normal",
-    margin: "50px",
+    margin: "20px",
     backgroundColor: isActive ? "red" : "lightgray",
-    padding: "5px",
+    padding: "5px"
   });
   return (
     <div>
-      <nav style={{ backgroundColor: "cyan", padding: "20px" }}>
+      <nav
+        style={{
+          backgroundColor: "cyan",
+          padding: "10px",
+          display: "flex",
+          flexWrap: "wrap"
+        }}
+      >
         <NavLink to="/algoliahackernews" style={style}>
           Algolia Hacker News
         </NavLink>
@@ -94,8 +106,14 @@ const Layout = (children) => {
         <NavLink to="/chatapp" style={style}>
           Chat App
         </NavLink>
-        <NavLink to="/hooks" style={style}>
-          HOOKS
+        <NavLink to="/usecallback" style={style}>
+          useCallback
+        </NavLink>
+        <NavLink to="/reactmemo" style={style}>
+          React Memo
+        </NavLink>
+        <NavLink to="/usememo" style={style}>
+          useMemo
         </NavLink>
       </nav>
       <main>
