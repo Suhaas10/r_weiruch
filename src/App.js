@@ -12,6 +12,7 @@ import UseCallback from "./UseCallback";
 import Hooks from "./Hooks";
 import ReactMemo from "./Reactmemo";
 import UseMemo from "./UseMemo";
+import ReactMapsPolygon from "./ReactMapsPolygon";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           <Route path="usecallback" element={<UseCallback />} />
           <Route path="reactmemo" element={<ReactMemo />} />
           <Route path="usememo" element={<UseMemo />} />
+          <Route path="reactmaps" element={<ReactMapsPolygon />} />
 
           <Route path="*" element={<NoMatch />} />
         </Route>
@@ -114,6 +116,9 @@ const Layout = (children) => {
         </NavLink>
         <NavLink to="/usememo" style={style}>
           useMemo
+        </NavLink>
+        <NavLink to="/reactmaps" style={style}>
+          React Maps
         </NavLink>
       </nav>
       <main>
